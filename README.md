@@ -1,4 +1,4 @@
- Smart Parking System
+# Smart Parking System
 
 > An automated parking-management prototype that detects vehicles with FC-51 IR
 > sensors at the entrance and exit and controls access through a servo gate,
@@ -17,9 +17,6 @@ This project demonstrates an automated, low-cost alternative: a system that
 tracks occupancy in real time, controls access automatically, and shows drivers
 the number of free spaces at a glance.
 
-<!-- [VERIFY] Optional: "Total bill of materials ≈ $22." Keep this only if you
-have actually added up the real part prices. Otherwise delete this comment. -->
-
 ---
 
 ## How It Works
@@ -35,7 +32,8 @@ have actually added up the real part prices. Otherwise delete this comment. -->
 - A **traffic-light LED module** gives instant visual feedback
   (green = enter, yellow = gate moving, red = full).
 
-![Wiring schematic](media/simulation-wiring-schematic.jpg)
+![System schematic](hardware/schematic.png)
+*System schematic, designed in KiCad.*
 
 ---
 
@@ -46,9 +44,21 @@ have actually added up the real part prices. Otherwise delete this comment. -->
 - **Actuator:** TowerPro SG90 micro servo (gate barrier)
 - **Display:** 16×2 character LCD with PCF8574 I²C backpack
 - **Indicators:** Traffic-light LED module (R/Y/G)
-- **Custom PCB:** Arduino carrier shield (see [`/hardware`](hardware/))
+- **Custom PCB:** carrier shield designed in KiCad (see [`/hardware`](hardware/))
 
-Full parts list in [`docs/`](docs/).
+Full bill of materials: [`docs/SmartParking_BOM.xlsx`](docs/SmartParking_BOM.xlsx).
+Engineering write-up: [`docs/DESIGN_NOTES.md`](docs/DESIGN_NOTES.md).
+
+---
+
+## Hardware Design
+
+A custom carrier PCB was designed in KiCad to move the project off breadboard
+wiring. The full project files (schematic, board, and project) are in
+[`/hardware`](hardware/).
+
+![PCB layout](hardware/PCB%20layout.png)
+*Custom PCB layout (KiCad).*
 
 ---
 
@@ -59,11 +69,10 @@ the physical board. That port was the most instructive part of the build:
 
 - **Different sensors in simulation vs hardware.** Wokwi doesn't provide the
   FC-51 IR module, so the simulation uses **HC-SR04 ultrasonic** sensors while
-  the real board uses **FC-51 IR**. The two firmwares detect vehicles
-  differently as a result: the simulation reads an ultrasonic *distance* and
-  compares it against a threshold, whereas the real board reads the FC-51's
-  *digital beam-break* output directly. Both versions live in
-  [`firmware/`](firmware/).
+  the real board ([`firmware/arduino_smart_parking_system_fc51.ino`](firmware/arduino_smart_parking_system_fc51.ino))
+  uses **FC-51 IR**. The two detect vehicles differently as a result: the
+  simulation reads an ultrasonic *distance* and compares it against a threshold,
+  whereas the real board reads the FC-51's *digital beam-break* output directly.
 - **Debouncing the IR input.** A raw IR module can blip on ambient light or a
   passing hand, so the firmware only accepts a vehicle after several consecutive
   "detected" reads — rejecting single-frame false triggers.
@@ -76,14 +85,14 @@ the physical board. That port was the most instructive part of the build:
 ## The System in Action
 
 The physical prototype running a complete parking cycle — from an empty lot,
-through a vehicle entering, to a full lot denying access:
+through vehicles entering, to a full lot denying access:
 
 | | | |
 |:--:|:--:|:--:|
-| ![Lot empty](media/real-build-02-lot-empty.jpg) | ![Car approaching](media/real-build-03-car-approach.jpg) | ![Gate opening](media/real-build-04-gate-opening.jpg) |
-| **Lot empty** — 4 slots free, gate down | **Car approaches** the entrance sensor | **Gate opens** — "Car entering...", yellow light |
+| ![Lot empty](media/real-build-02-lot-empty.jpg) | ![First car approaching](media/real-build-03-first-car-approach.jpg) | ![Gate opening](media/real-build-04-gate-opening-for-second-car.jpg) |
+| **Lot empty** — 4 slots free, gate down | **First car approaches** the entrance sensor | **Gate opens** — "Car entering...", yellow light |
 | ![Slot decrement](media/real-build-05-slot-decrement.jpg) | ![Lot full](media/real-build-06-lot-full.jpg) | ![Access denied](media/real-build-07-access-denied.jpg) |
-| **Slot count drops** as the car passes | **Lot full** — 0 spaces available | **Access denied** — "No Space Left", red light |
+| **Slot count drops** as cars are admitted | **Lot full** — 0 spaces available | **Access denied** — "No Space Left", red light |
 
 ---
 
@@ -92,24 +101,31 @@ through a vehicle entering, to a full lot denying access:
 The full control logic was validated in a Wokwi simulation before hardware
 testing (sensor difference explained in *Engineering Notes* above).
 
-![Simulation demo](media/simulation-demo.gif)
+![Simulation wiring](media/simulation-wiring-schematic.png)
+*Wokwi simulation wiring (uses HC-SR04 in place of the FC-51 modules).*
 
-▶️ **Full simulation video:** <!-- [FILL IN] drag your .mp4 into the GitHub
-editor here to embed the player, or paste an Unlisted YouTube link -->
+![Simulation demo](media/simulation-behavioral-demo.gif)
+
+[▶️ Watch the full simulation video](media/simulation-behavioral-demo-video.mp4)
 
 ---
 
 ## Repository Structure
 
 ```
-smart-parking-system/
+Smart-parking-System/
 ├── firmware/
-│   ├── smart_parking_system.ino        Real board (FC-51 IR)
-│   └── simulation/
-│       └── smart_parking_sim.ino       Wokwi simulation (HC-SR04)
-├── hardware/     KiCad schematic, PCB layout, Gerbers
-├── docs/         Bill of materials, design notes
-├── media/        Real-build photos, simulation schematic, video/GIF
+│   └── arduino_smart_parking_system_fc51.ino   Real board (FC-51 IR)
+├── hardware/
+│   ├── Smart Parking System.kicad_sch          KiCad schematic
+│   ├── Smart Parking System.kicad_pcb          KiCad board layout
+│   ├── Smart Parking System.kicad_pro          KiCad project
+│   ├── schematic.png                           Schematic export
+│   └── PCB layout.png                          PCB layout export
+├── docs/
+│   ├── DESIGN_NOTES.md                         Engineering write-up
+│   └── SmartParking_BOM.xlsx                    Bill of materials
+├── media/                                      Real-build photos, sim video/GIF
 └── README.md
 ```
 
