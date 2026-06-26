@@ -90,7 +90,7 @@ through vehicles entering, to a full lot denying access:
 | | | |
 |:--:|:--:|:--:|
 | ![Lot empty](media/real-build-02-lot-empty.jpg) | ![First car approaching](media/real-build-03-first-car-approach.jpg) | ![Gate opening](media/real-build-04-gate-opening-for-second-car.jpg) |
-| **Lot empty** — 4 slots free, gate down | **First car approaches** the entrance sensor | **Gate opens** — "Car entering...", yellow light |
+| **Lot empty** — 4 slots free, gate down | **First car approaches**  | **Gate opens** — "Car entering..." |
 | ![Slot decrement](media/real-build-05-slot-decrement.jpg) | ![Lot full](media/real-build-06-lot-full.jpg) | ![Access denied](media/real-build-07-access-denied.jpg) |
 | **Slot count drops** as cars are admitted | **Lot full** — 0 spaces available | **Access denied** — "No Space Left", red light |
 
